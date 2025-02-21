@@ -13,12 +13,12 @@
         const ctx = document.getElementById('clockPieChart').getContext('2d');
 
         // Define time slices in hours
-        const sleep = 9; // 23:00 - 08:00
-        const work = 4;  // 08:00 - 12:00
-        const fog = 11;  // 12:00 - 23:00
+        const sleep = 9;  // 23:00 - 08:00 (9 hours)
+        const work = 4;   // 08:00 - 12:00 (4 hours)
+        const fog = 11;   // 12:00 - 23:00 (11 hours)
 
         new Chart(ctx, {
-            type: 'pie',  // Changed from 'doughnut' to 'pie'
+            type: 'pie',
             data: {
                 labels: ['Sleep (23:00-08:00)', 'Work (08:00-12:00)', 'Fog (12:00-23:00)'],
                 datasets: [{
@@ -30,7 +30,8 @@
             },
             options: {
                 responsive: true,
-                rotation: -90, // Ensures 0:00 starts at the top
+                rotation: -90,  // Ensure 0:00 is at the top
+                circumference: 360,  // Full circle
                 plugins: {
                     legend: {
                         position: 'bottom'
