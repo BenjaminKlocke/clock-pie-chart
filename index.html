@@ -3,91 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fixed 1440-Slice Clock Pie Chart</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Daily Pie Chart</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <canvas id="clockPieChart" width="400" height="400"></canvas>
-
+    <svg width="500" height="500"></svg>
     <script>
-        const ctx = document.getElementById('clockPieChart').getContext('2d');
-
-        // Function to convert HH:MM to minutes (0-1439)
-        function timeToMinutes(time) {
-            const [hours, minutes] = time.split(':').map(Number);
-            return hours * 60 + minutes;
-        }
-
-        // Define activities with start and end times
-        const activities = [
-            { name: "Sleep", color: "#1E3A8A", start: "23:00", end: "08:00" },
-            { name: "Work", color: "#EAB308", start: "08:00", end: "12:00" },
-            { name: "Fog", color: "#4B5563", start: "12:00", end: "23:00" }
+        const width = 500, height = 500, radius = Math.min(width, height) / 2;
+        const svg = d3.select("svg").append("g").attr("transform", `translate(${width / 2},${height / 2})`);
+        
+        // Define time segments (minutes of the day)
+        const timeBlocks = [
+            { label: "Sleep", start: 1380, end: 1439, color: "#1f3b9d" }, // 23:00-23:59
+            { label: "Sleep", start: 0, end: 479, color: "#1f3b9d" },    // 00:00-08:00
+            { label: "Work", start: 480, end: 719, color: "#e6ac00" },  // 08:00-12:00
+            { label: "Fog", start: 720, end: 1379, color: "#4a4d52" }   // 12:00-23:00
         ];
-
-        // Initialize 1440 minutes with default values
-        const minuteLabels = new Array(1440).fill("Unassigned");
-        const minuteColors = new Array(1440).fill("#CCCCCC"); // Default color
-
-        // Assign activities to minutes
-        activities.forEach(activity => {
-            let start = timeToMinutes(activity.start);
-            let end = timeToMinutes(activity.end);
-
-            // Handle cases where activity wraps around midnight
-            if (end < start) {
-                for (let i = start; i < 1440; i++) {
-                    minuteLabels[i] = activity.name;
-                    minuteColors[i] = activity.color;
-                }
-                for (let i = 0; i < end; i++) {
-                    minuteLabels[i] = activity.name;
-                    minuteColors[i] = activity.color;
-                }
-            } else {
-                for (let i = start; i < end; i++) {
-                    minuteLabels[i] = activity.name;
-                    minuteColors[i] = activity.color;
-                }
+        
+        // Create array of 1440 slices
+        let data = new Array(1440).fill("Fog").map((d, i) => {
+            for (let block of timeBlocks) {
+                if (i >= block.start && i <= block.end) return { label: block.label, color: block.color };
             }
+            return { label: "Fog", color: "#4a4d52" };
         });
-
-        // Aggregate minutes into larger slices to keep the chart readable
-        const sliceSize = 10; // Each slice represents 10 minutes
-        const data = [];
-        const backgroundColors = [];
-        const labels = [];
-
-        for (let i = 0; i < 1440; i += sliceSize) {
-            let label = minuteLabels[i]; // Use the label of the first minute in the slice
-            data.push(sliceSize);
-            labels.push(label);
-            backgroundColors.push(minuteColors[i]);
-        }
-
-        // Create Chart.js Pie Chart
-        new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: backgroundColors,
-                    borderColor: '#ffffff',
-                    borderWidth: 1,
-                }]
-            },
-            options: {
-                responsive: true,
-                rotation: -90, // Ensure 0:00 is at the top
-                circumference: 360, // Full circle
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
+        
+        const pie = d3.pie().sort(null).value(() => 1).startAngle(-Math.PI / 2).endAngle(1.5 * Math.PI);
+        const arc = d3.arc().innerRadius(0).outerRadius(radius);
+        
+        svg.selectAll("path")
+            .data(pie(data))
+            .enter()
+            .append("path")
+            .attr("d", arc)
+            .attr("fill", d => d.data.color);
     </script>
 </body>
 </html>
