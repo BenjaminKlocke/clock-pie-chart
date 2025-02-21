@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock Pie Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="clockPieChart" width="400" height="400"></canvas>
+
+    <script>
+        const ctx = document.getElementById('clockPieChart').getContext('2d');
+
+        // Define time slices in hours
+        const sleep = 9; // 23:00 - 08:00
+        const work = 4;  // 08:00 - 12:00
+        const fog = 11;  // 12:00 - 23:00
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Sleep (23:00-08:00)', 'Work (08:00-12:00)', 'Fog (12:00-23:00)'],
+                datasets: [{
+                    data: [sleep, work, fog],
+                    backgroundColor: ['#1E3A8A', '#EAB308', '#4B5563'], // Blue, Yellow, Gray
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '40%', // Adjust hole size
+                rotation: -90, // Starts the chart at 00:00 (top)
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
