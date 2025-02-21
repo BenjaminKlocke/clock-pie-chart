@@ -18,7 +18,7 @@
         const fog = 11;  // 12:00 - 23:00
 
         new Chart(ctx, {
-            type: 'doughnut',
+            type: 'pie',  // Changed from 'doughnut' to 'pie'
             data: {
                 labels: ['Sleep (23:00-08:00)', 'Work (08:00-12:00)', 'Fog (12:00-23:00)'],
                 datasets: [{
@@ -30,8 +30,7 @@
             },
             options: {
                 responsive: true,
-                cutout: '40%', // Adjust hole size
-                rotation: -90, // Starts the chart at 00:00 (top)
+                rotation: -90, // Ensures 0:00 starts at the top
                 plugins: {
                     legend: {
                         position: 'bottom'
